@@ -1,35 +1,488 @@
-When starting the program, the necessary algorithm should be specified by an argument (-alg). The first algorithm should be named shift, the second one should be named unicode. If there is no -alg you should default it to shift.
+package Test;
 
-Remember that in case of shift algorithm you need to encode only English letters (from 'a' to 'z' as the first circle and from 'A' to 'Z' as the second circle i.e. after 'z' comes 'a' and after 'Z' comes 'A').
+import java.io.*;
+import java.util.*;
 
-To complete this stage, we recommend that you create a set of classes and interfaces for encryption and decryption algorithms.
+public class Main {
+    public static String out = "";
 
-Examples Example 1
+    public static String getOut() {
+        return out;
+    }
 
-java Main -mode enc -in road_to_treasure.txt -out protected.txt -key 5 -alg unicode This command must get data from the file road_to_treasure.txt, encrypt the data with the key 5, create a file called protected.txt and write ciphertext to it.
+    public static void main(String[] args) {
+        String mode = "enc";
+        String data = "";
+        String in = "";
+        String alg = "";
+        boolean check = false;
+        int count = 0;
 
-Example 2
+        int key = 0;
 
-Input:
+        for (int i = 0; i < args.length - 1; i++) {
+            if (args[i].equals("-mode")) {
+                mode = args[i + 1];
+                if (mode == "") {
+                    check = true;
+                    count++;
+                }
 
-java Main -mode enc -key 5 -data "Welcome to hyperskill!" -alg unicode Output:
+            }
+            if (args[i].equals("-data") ) {
+                data = args[i + 1];
+                if (data == "") {
+                    check = true;
+                    count++;
+                }
+            }
+            if (args[i].equals("-key")) {
+                key = Integer.valueOf(args[i + 1]);
+                String str_key = args[i + 1];
+                if (str_key == "") {
+                    check = true;
+                    count++;
+                }
+            }
+            if (args[i].equals("-in")) {
+                in = args[i + 1];
+                if (in == "") {
+                    check = true;
+                    count++;
+                }
+            }
+            if (args[i].equals("-out")) {
+                out = args[i + 1];
+                if (out == "") {
+                    check = true;
+                    count++;
+                }
+            }
 
-\jqhtrj%yt%m~ujwxpnqq& Example 3
+            if (args[i].equals("-alg")) {
+                alg = args[i + 1];
+                if (alg == "shift") {
+                    alg = "shift";
+                } else if (alg == "unicode") {
+                    alg = "unicode";
+                }
+            }
 
-Input:
+            if (in == "" && data == "") {
+                data = "";
+            }
+            if (in != "" && data != "") {
+                in = data;
+            }
+            if (in != "" && data == "") {
+                data = in;
+            }
 
-java Main -key 5 -alg unicode -data "\jqhtrj%yt%m~ujwxpnqq&" -mode dec Output:
+        }
 
-Welcome to hyperskill! Example 4:
 
-Input:
+        if (count > 0) {
+            System.out.println("Error");
+        } else if ("dec".equals(mode) && "shift".equals(alg)) {
+            new Shift().Decode(data, key);
+        } else if ("enc".equals(mode) && "shift".equals(alg)) {
+            new Shift().Encode(data, key);
+        } else if ("dec".equals(mode) && "unicode".equals(alg)) {
+            new Unicode().Decode(data, key);
+        } else if ("enc".equals(mode) && "unicode".equals(alg)) {
+            new Unicode().Encode(data, key);
+        } else if ("dec".equals(mode)) {
+            new Shift().Decode(data, key);
+        } else if ("enc".equals(mode)) {
+            new Shift().Encode(data, key);
+        }
+    }
 
-java Main -key 5 -alg shift -data "Welcome to hyperskill!" -mode enc Output:
+//    private static void Decode(String input, int step) {
+//        String temp_input = "";
+//        char temp_ch = '\0';
+//
+//        if (input.contains(".txt")) {
+//
+//            try {
+//                File file = new File(input);
+//                Scanner myReader = new Scanner(file);
+//                while (myReader.hasNextLine()) {
+//                    temp_input = temp_input + myReader.nextLine();
+////                    System.out.println(temp_input);
+//                }
+//                myReader.close();
+//                System.out.println(temp_input + " as result");
+//
+//            } catch (FileNotFoundException e) {
+//                System.out.println("Error");
+//            }
+//
+//            char[] chars = temp_input.toCharArray();
+//            char[] encode = new char[chars.length];
+//
+//            for (int i = 0; i < chars.length; i++) {
+//                encode[i] = (char)(chars[i] - step);
+//            }
+//
+//            String result = String.valueOf(encode);
+//
+//            if (out != "") {
+//
+//                try (FileWriter fileWriter = new FileWriter(out)) {
+//                    fileWriter.write(result);
+//                } catch (IOException e) {
+//                    // Cxception handling
+//                    System.out.println("Error");
+//                }
+//            } else {
+//                System.out.println(result);
+//            }
+//
+//        } else {
+//
+//            char[] chars = input.toCharArray();
+//            char[] encode = new char[chars.length];
+//
+//            for (int i = 0; i < chars.length; i++) {
+//                encode[i] = (char) (chars[i] - step);
+//            }
+//            String result = String.valueOf(encode);
+//            System.out.println(result);
+//        }
+//    }
+//
+//    private static void Encode(String input, int step) {
+//        String temp_input = "";
+//        char temp_ch = '\0';
+//
+//        if (input.contains(".txt")) {
+//            try {
+//                File file = new File(input);
+//                Scanner myReader = new Scanner(file);
+//                while (myReader.hasNextLine()) {
+//                    temp_input = temp_input + myReader.nextLine();
+////                    System.out.println(temp_input);
+//                }
+//                myReader.close();
+//                System.out.println(temp_input + " as result");
+//
+//            } catch (FileNotFoundException e) {
+//                System.out.println("Error");
+//            }
+//            char[] chars = temp_input.toCharArray();
+//            char[] encode = new char[chars.length];
+//
+//            for (int i = 0; i < chars.length; i++) {
+//                encode[i] = (char) (chars[i] + step);
+//            }
+//
+//            String result = String.valueOf(encode);
+//
+//            if (out != "") {
+//
+//                try (FileWriter fileWriter = new FileWriter(out)) {
+//                    fileWriter.write(result);
+//                } catch (IOException e) {
+//                    // Cxception handling
+//                    System.out.println("Error");
+//                }
+//            } else {
+//                System.out.println(result);
+//            }
+//
+//        } else {
+//            char[] chars = input.toCharArray();
+//            char[] encode = new char[chars.length];
+//
+//            for (int i = 0; i < chars.length; i++) {
+//                encode[i] = (char) (chars[i] + step);
+//            }
+//            String result = String.valueOf(encode);
+//            System.out.println(result);
+//        }
+//    }
+}
 
-Bjqhtrj yt mdujwxpnqq! Example 5:
+interface EncodingDecoding {
 
-Input:
+    void Encode(String input, int step);
 
-java Main -key 5 -alg shift -data "Bjqhtrj yt mdujwxpnqq!" -mode dec Output:
+    void Decode(String input, int step);
+}
 
-Welcome to hyperskill!
+class Shift implements EncodingDecoding {
+
+    @Override
+    public void Encode(String input, int step) {
+        String out = Main.getOut();
+
+        String temp_input = "";
+        char temp_ch = '\0';
+
+        if (input.contains(".txt")) {
+            try {
+                File file = new File(input);
+                Scanner myReader = new Scanner(file);
+                while (myReader.hasNextLine()) {
+                    temp_input = temp_input + myReader.nextLine();
+//                    System.out.println("inputed file content >> " + temp_input);
+                }
+                myReader.close();
+//                System.out.println(temp_input);
+
+            } catch (FileNotFoundException e) {
+                System.out.println("Error");
+            }
+            char[] chars = temp_input.toCharArray();
+            char[] encode = new char[chars.length];
+
+            for (int i = 0; i < chars.length; i++) {
+
+                if (chars[i] + step > 122 && chars[i] <= 122 && chars[i] >= 97)  {
+                    int diff = Math.abs(chars[i] + step - 123);
+                    encode[i] = (char)(97 + diff);
+//                    System.out.println("XXXXX " + encode[i]);
+                } else if (chars[i] + step > 90 && chars[i] <= 90 && chars[i] >= 65) {
+                    int diff = Math.abs(chars[i] + step - 91);
+                    encode[i] = (char)(65 + diff);
+//                    System.out.println("ZXZXZX " + encode[i]);
+                } else if (chars[i] >= 65 && chars[i] <= 90 || chars[i] >= 97 && chars[i] <= 122) {
+                    encode[i] = (char) (chars[i] + step);
+//                    System.out.println("ZZZZZ " + encode[i]);
+                } else {
+                    encode[i] = chars[i];
+                }
+            }
+
+            String result = String.valueOf(encode);
+//            System.out.println("<< " + result);
+
+            if (!out.equals("")) {
+
+                try (FileWriter fileWriter = new FileWriter(out)) {
+                    fileWriter.write(result);
+                } catch (IOException e) {
+                    // Cxception handling
+                    System.out.println("Error");
+                }
+            } else {
+                System.out.println(result);
+            }
+
+        }
+//        else {
+//            char[] chars = input.toCharArray();
+//            char[] encode = new char[chars.length];
+//
+//            for (int i = 0; i < chars.length; i++) {
+//                if (chars[i] + step > 90) {
+//                    int diff = chars[i] + step - 90;
+//                    encode[i] = (char)(65 + diff);
+//                } else if (chars[i] + step > 122) {
+//                    int diff = chars[i] + step - 122;
+//                    encode[i] = (char)(97 + diff);
+//                } else {
+//                    encode[i] = (char) (chars[i] + step);
+//                }
+//            }
+//            String result = String.valueOf(encode);
+//            System.out.println(result);
+//        }
+
+    }
+
+    @Override
+    public void Decode(String input, int step) {
+        String out = Main.getOut();
+        String temp_input = "";
+        char temp_ch = '\0';
+
+        if (input.contains(".txt")) {
+
+            try {
+                File file = new File(input);
+                Scanner myReader = new Scanner(file);
+                while (myReader.hasNextLine()) {
+                    temp_input = temp_input + myReader.nextLine();
+//                    System.out.println(temp_input);
+                }
+                myReader.close();
+//                System.out.println(temp_input);
+
+            } catch (FileNotFoundException e) {
+                System.out.println("Error");
+            }
+
+            char[] chars = temp_input.toCharArray();
+            char[] encode = new char[chars.length];
+
+            for (int i = 0; i < chars.length; i++) {
+                if (chars[i] - step < 65 && chars[i] <= 90 && chars[i] >= 65) {
+                    int diff = Math.abs(chars[i] - step - 64);
+                    encode[i] = (char)(90 - diff);
+                } else if (chars[i] - step < 97 && chars[i] <= 122 && chars[i] >= 97) {
+                    int diff = Math.abs(chars[i] - step - 96);
+                    encode[i] = (char)(122 - diff);
+                } else if (chars[i] >= 65 && chars[i] <= 90 || chars[i] >= 97 && chars[i] <= 122) {
+                    encode[i] = (char)(chars[i] - step);
+                } else {
+                    encode[i] = chars[i];
+                }
+            }
+
+            String result = String.valueOf(encode);
+//            System.out.println(result);
+
+            if (out != "") {
+
+                try (FileWriter fileWriter = new FileWriter(out)) {
+                    fileWriter.write(result);
+                } catch (IOException e) {
+                    // Cxception handling
+                    System.out.println("Error");
+                }
+            } else {
+                System.out.println(result);
+            }
+
+        } else {
+
+            char[] chars = input.toCharArray();
+            char[] encode = new char[chars.length];
+
+            for (int i = 0; i < chars.length; i++) {
+                if (chars[i] - step < 65) {
+                    int diff = Math.abs(chars[i] - step - 65);
+                    encode[i] = (char)(90 - diff);
+                } else if (chars[i] - step < 97) {
+                    int diff = Math.abs(chars[i] - step - 97);
+                    encode[i] = (char)(122 - diff);
+                } else {
+                    encode[i] = (char)(chars[i] - step);
+                }
+            }
+            String result = String.valueOf(encode);
+            System.out.println(result);
+        }
+
+
+    }
+}
+
+class Unicode implements EncodingDecoding {
+
+    @Override
+    public void Encode(String input, int step) {
+        String out = Main.getOut();
+
+        String temp_input = "";
+        char temp_ch = '\0';
+
+        if (input.contains(".txt")) {
+            try {
+                File file = new File(input);
+                Scanner myReader = new Scanner(file);
+                while (myReader.hasNextLine()) {
+                    temp_input = temp_input + myReader.nextLine();
+//                    System.out.println(temp_input);
+                }
+                myReader.close();
+                System.out.println(temp_input);
+
+            } catch (FileNotFoundException e) {
+                System.out.println("Error");
+            }
+            char[] chars = temp_input.toCharArray();
+            char[] encode = new char[chars.length];
+
+            for (int i = 0; i < chars.length; i++) {
+                encode[i] = (char) (chars[i] + step);
+            }
+
+            String result = String.valueOf(encode);
+
+            if (out != "") {
+
+                try (FileWriter fileWriter = new FileWriter(out)) {
+                    fileWriter.write(result);
+                } catch (IOException e) {
+                    // Cxception handling
+                    System.out.println("Error");
+                }
+            } else {
+                System.out.println(result);
+            }
+
+        } else {
+            char[] chars = input.toCharArray();
+            char[] encode = new char[chars.length];
+
+            for (int i = 0; i < chars.length; i++) {
+                encode[i] = (char) (chars[i] + step);
+            }
+            String result = String.valueOf(encode);
+            System.out.println(result);
+        }
+
+    }
+
+    @Override
+    public void Decode(String input, int step) {
+        String out = Main.getOut();
+        String temp_input = "";
+        char temp_ch = '\0';
+
+        if (input.contains(".txt")) {
+
+            try {
+                File file = new File(input);
+                Scanner myReader = new Scanner(file);
+                while (myReader.hasNextLine()) {
+                    temp_input = temp_input + myReader.nextLine();
+//                    System.out.println(temp_input);
+                }
+                myReader.close();
+                System.out.println(temp_input);
+
+            } catch (FileNotFoundException e) {
+                System.out.println("Error");
+            }
+
+            char[] chars = temp_input.toCharArray();
+            char[] encode = new char[chars.length];
+
+            for (int i = 0; i < chars.length; i++) {
+                encode[i] = (char)(chars[i] - step);
+            }
+
+            String result = String.valueOf(encode);
+
+            if (out != "") {
+
+                try (FileWriter fileWriter = new FileWriter(out)) {
+                    fileWriter.write(result);
+                } catch (IOException e) {
+                    // Cxception handling
+                    System.out.println("Error");
+                }
+            } else {
+                System.out.println(result);
+            }
+
+        } else {
+
+            char[] chars = input.toCharArray();
+            char[] encode = new char[chars.length];
+
+            for (int i = 0; i < chars.length; i++) {
+                encode[i] = (char) (chars[i] - step);
+            }
+            String result = String.valueOf(encode);
+            System.out.println(result);
+        }
+    }
+
+
+}
+
